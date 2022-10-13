@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nagarro.currency.presentation.convert.ConvertViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Spinner
+            android:id="@+id/fromCurrency"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="200dp"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toStartOf="@id/swapButton"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/swapButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:onClick="@{() -> viewModel.onSwapClicked()}"
+            android:src="@drawable/ic_swap_horiz_24"
+            app:layout_constraintBottom_toBottomOf="@id/fromCurrency"
+            app:layout_constraintEnd_toStartOf="@id/toCurrency"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/fromCurrency"
+            app:layout_constraintTop_toTopOf="@id/fromCurrency" />
+
+        <Spinner
+            android:id="@+id/toCurrency"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/swapButton"
+            app:layout_constraintTop_toTopOf="@id/fromCurrency" />
+
+        <EditText
+            android:id="@+id/fromCurrencyValue"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="25dp"
+            android:afterTextChanged="@{(text) -> viewModel.onEnterFromCurrencyValue(text)}"
+            android:inputType="numberDecimal"
+            android:text="@={viewModel.fromCurrencyValue}"
+            app:layout_constraintEnd_toEndOf="@id/fromCurrency"
+            app:layout_constraintStart_toStartOf="@id/fromCurrency"
+            app:layout_constraintTop_toBottomOf="@id/fromCurrency" />
+
+        <EditText
+            android:id="@+id/toCurrencyValue"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:afterTextChanged="@{(text) -> viewModel.onEnterToCurrencyValue(text)}"
+            android:inputType="numberDecimal"
+            android:text="@={viewModel.toCurrencyValue}"
+            app:layout_constraintEnd_toEndOf="@id/toCurrency"
+            app:layout_constraintStart_toStartOf="@id/toCurrency"
+            app:layout_constraintTop_toTopOf="@id/fromCurrencyValue" />
+
+        <Button
+            android:id="@+id/detailsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:onClick="@{() -> viewModel.onDetailsClicked()}"
+            android:text="Details"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fromCurrencyValue" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

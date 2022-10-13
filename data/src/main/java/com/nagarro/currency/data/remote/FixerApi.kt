@@ -1,18 +1,18 @@
-package com.nagarro.currency.data.repository
+package com.nagarro.currency.data.remote
 
 import retrofit2.http.GET
 
 interface FixerApi {
 
-    @GET("api/symbols")
+    @GET("fixer/symbols")
     suspend fun getSymbols()
 
-    @GET("api/latest")
+    @GET("fixer/latest")
     suspend fun getLatestExchangeRate()
 
-    @GET("api/{start_date}")
+    @GET("fixer/{start_date}")
     suspend fun getHistoricalRates()
 
-    @GET("api/timeseries")
+    @GET("fixer/timeseries")
     suspend fun getTimeseries()
 }
