@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import com.nagarro.currency.architecture.NavigationCommand
 import com.nagarro.currency.architecture.SingleLiveEvent
-import com.nagarro.currency.domain.common.ErrorEntity
+import com.nagarro.currency.domain.entity.ErrorEntity
 
 abstract class BaseViewModel : ViewModel() {
 

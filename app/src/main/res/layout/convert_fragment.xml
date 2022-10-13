@@ -15,9 +15,13 @@
 
         <Spinner
             android:id="@+id/fromCurrency"
+            itemBinding="@{viewModel.itemBinding}"
+            items="@{viewModel.items}"
+            onItemSelectListener="@{(pos) -> viewModel.onSelectFromCurrency(pos)}"
             android:layout_width="150dp"
             android:layout_height="50dp"
             android:layout_marginTop="200dp"
+            android:prompt="@{viewModel.fromCurr}"
             android:spinnerMode="dropdown"
             app:layout_constraintEnd_toStartOf="@id/swapButton"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -39,8 +43,12 @@
 
         <Spinner
             android:id="@+id/toCurrency"
+            itemBinding="@{viewModel.itemBinding}"
+            items="@{viewModel.items}"
+            onItemSelectListener="@{(pos) -> viewModel.onSelectToCurrency(pos)}"
             android:layout_width="150dp"
             android:layout_height="50dp"
+            android:prompt="@{viewModel.toCurr}"
             android:spinnerMode="dropdown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -54,7 +62,7 @@
             android:layout_marginTop="25dp"
             android:afterTextChanged="@{(text) -> viewModel.onEnterFromCurrencyValue(text)}"
             android:inputType="numberDecimal"
-            android:text="@={viewModel.fromCurrencyValue}"
+            android:text="@{viewModel.fromCurrencyValue}"
             app:layout_constraintEnd_toEndOf="@id/fromCurrency"
             app:layout_constraintStart_toStartOf="@id/fromCurrency"
             app:layout_constraintTop_toBottomOf="@id/fromCurrency" />
@@ -65,7 +73,7 @@
             android:layout_height="50dp"
             android:afterTextChanged="@{(text) -> viewModel.onEnterToCurrencyValue(text)}"
             android:inputType="numberDecimal"
-            android:text="@={viewModel.toCurrencyValue}"
+            android:text="@{viewModel.toCurrencyValue}"
             app:layout_constraintEnd_toEndOf="@id/toCurrency"
             app:layout_constraintStart_toStartOf="@id/toCurrency"
             app:layout_constraintTop_toTopOf="@id/fromCurrencyValue" />
@@ -76,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:onClick="@{() -> viewModel.onDetailsClicked()}"
-            android:text="Details"
+            android:text="@string/action_details"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fromCurrencyValue" />

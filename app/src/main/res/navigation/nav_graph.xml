@@ -6,6 +6,7 @@
 
     <fragment
         android:id="@+id/convertFragment"
+        android:name="com.nagarro.currency.presentation.convert.ConvertFragment"
         android:label="ConvertFragment">
         <action
             android:id="@+id/action_goToDetailsScreen"
@@ -14,5 +15,6 @@
 
     <fragment
         android:id="@+id/detailsFragment"
+        android:name="com.nagarro.currency.presentation.details.DetailsFragment"
         android:label="DetailsFragment" />
 </navigation>
