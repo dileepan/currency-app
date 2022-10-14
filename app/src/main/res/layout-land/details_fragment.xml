@@ -17,10 +17,12 @@
 
         <LinearLayout
             android:id="@+id/historicalHeader"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="30dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@id/latestHeader"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -71,12 +73,14 @@
 
         <LinearLayout
             android:id="@+id/latestHeader"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="30dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/historicalRateList">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/historicalHeader"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:layout_width="0dp"

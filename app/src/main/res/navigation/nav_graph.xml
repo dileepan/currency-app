@@ -16,5 +16,16 @@
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.nagarro.currency.presentation.details.DetailsFragment"
-        android:label="DetailsFragment" />
+        android:label="DetailsFragment">
+        <argument
+            android:name="fromCurrency"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="toCurrency"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
 </navigation>

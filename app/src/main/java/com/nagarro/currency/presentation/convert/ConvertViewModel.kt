@@ -24,6 +24,22 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
     val items: ObservableList<String> = ObservableArrayList()
     val itemBinding = ItemBinding.of<String>(BR.item, R.layout.item_spinner)
 
+    val selectFromCurrency: (pos: Int) -> Unit = { pos ->
+        from = items[pos]
+        if (fromCurr.get() != from) {
+            fromCurr.set(from)
+            fetchExchangeRate()
+        }
+    }
+
+    val selectToCurrency: (pos: Int) -> Unit = { pos ->
+        to = items[pos]
+        if (toCurr.get() != to) {
+            toCurr.set(to)
+            fetchExchangeRate()
+        }
+    }
+
     private var rate: Double = 0.0
     private var from = ""
     private var to = ""
@@ -49,22 +65,8 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
         fromCurrencyValue.set(String.format("%.2f", value.toString().toDouble() / rate))
     }
 
-    fun onSelectFromCurrency(pos: Int) {
-        from = items[pos]
-        if (fromCurr.get() == from) return
-        fromCurr.set(from)
-        fetchExchangeRate()
-    }
-
-    fun onSelectToCurrency(pos: Int) {
-        to = items[pos]
-        if (toCurr.get() == to) return
-        toCurr.set(to)
-        fetchExchangeRate()
-    }
-
     fun onDetailsClicked() {
-        navigate(ConvertFragmentDirections.actionGoToDetailsScreen())
+        navigate(ConvertFragmentDirections.actionGoToDetailsScreen(from, to))
     }
 
     fun onSwapClicked() {
