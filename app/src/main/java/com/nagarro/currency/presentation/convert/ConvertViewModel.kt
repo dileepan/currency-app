@@ -6,9 +6,11 @@ import androidx.core.text.isDigitsOnly
 import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableList
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.nagarro.currency.BR
 import com.nagarro.currency.R
+import com.nagarro.currency.architecture.SingleLiveEvent
 import com.nagarro.currency.domain.common.ResultState
 import com.nagarro.currency.domain.usecase.CurrencyUseCase
 import com.nagarro.currency.listeners.OnItemSelectListener
@@ -18,28 +20,27 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding
 
 class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
 
+    private val _swapEvent = SingleLiveEvent<Pair<Int, Int>>()
+    val swapEvent: LiveData<Pair<Int, Int>> = _swapEvent
+
     val fromCurrencyValue = ObservableField("")
     val toCurrencyValue = ObservableField("")
-    val fromCurr = ObservableField("")
-    val toCurr = ObservableField("")
 
     val items: ObservableList<String> = ObservableArrayList()
     val itemBinding = ItemBinding.of<String>(BR.item, R.layout.item_spinner)
 
     val selectFromCurrency = object : OnItemSelectListener {
         override fun onItemSelected(view: View, position: Int) {
+            if (from == items[position]) return
             from = items[position]
-            if (fromCurr.get() == from) return
-            fromCurr.set(from)
             fetchExchangeRate()
         }
     }
 
     val selectToCurrency = object : OnItemSelectListener {
         override fun onItemSelected(view: View, position: Int) {
+            if (to == items[position]) return
             to = items[position]
-            if (toCurr.get() == to) return
-            toCurr.set(to)
             fetchExchangeRate()
         }
     }
@@ -77,13 +78,16 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
 
     fun onSwapClicked() {
         if (to.isBlank() || from.isBlank()) return
+
         rate = 1.0 / rate
-        toCurr.set(from)
-        fromCurr.set(to)
-        from = fromCurr.get() ?: ""
-        to = toCurr.get() ?: ""
+        val t = from
+        from = to
+        to = t
+
+        _swapEvent.postValue(Pair(items.indexOf(from), items.indexOf(to)))
+
         if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
-            fromCurrencyValue.set("1")
+            fromCurrencyValue.set("1.00")
         }
         val toValue = fromCurrencyValue.get()?.let { it.toDouble() * rate } ?: rate
         toCurrencyValue.set(String.format("%.2f", toValue))
@@ -94,7 +98,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
         if (from == to) {
             rate = 1.0
             if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
-                fromCurrencyValue.set("1")
+                fromCurrencyValue.set("1.00")
             }
             toCurrencyValue.set(fromCurrencyValue.get())
             return
@@ -105,7 +109,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
                 is ResultState.Success -> {
                     rate = res.data
                     if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
-                        fromCurrencyValue.set("1")
+                        fromCurrencyValue.set("1.00")
                     }
                     val toValue = fromCurrencyValue.get()?.let { it.toDouble() * rate } ?: rate
                     toCurrencyValue.set(String.format("%.2f", toValue))
