@@ -1,6 +1,7 @@
 package com.nagarro.currency.data.repository
 
 import android.util.MalformedJsonException
+import com.nagarro.currency.data.constants.FIXER_DATE_FORMAT
 import com.nagarro.currency.data.constants.NetworkConstants
 import com.nagarro.currency.data.dto.BaseDto
 import com.nagarro.currency.data.mapper.map
@@ -16,6 +17,7 @@ import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketException
 import java.net.SocketTimeoutException
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class FixerRepositoryImpl(val api: FixerApi) : FixerRepository {
@@ -40,9 +42,12 @@ class FixerRepositoryImpl(val api: FixerApi) : FixerRepository {
 
     override suspend fun fetchHistoricalData(base: String, to: String): ResultState<DataEntity.HistoricalData> {
         val cal = Calendar.getInstance()
-        val endDate = cal.time
-        cal.add(Calendar.DATE, 3)
-        val startDate = cal.time
+        val sdf = SimpleDateFormat(FIXER_DATE_FORMAT)
+
+        val endDate = sdf.format(cal.time)
+        cal.add(Calendar.DATE, -2)
+        val startDate = sdf.format(cal.time)
+
         return when(val res = apiCall { api.getTimeseries(startDate, endDate, base, to) }) {
             is ResultState.Success -> ResultState.Success(res.data.map())
             is ResultState.Error -> ResultState.Error(res.errorEntity)
@@ -61,8 +66,8 @@ class FixerRepositoryImpl(val api: FixerApi) : FixerRepository {
             val response = call()
             if (response.isSuccessful) {
                 response.body()?.let { r ->
-                    if (r.success == true) ResultState.Success(r)
-                    else r.error?.let { errorDto ->  ResultState.Error(errorDto.map()) }
+                    if (r.reqStatus == true) ResultState.Success(r)
+                    else r.errorDto?.let { errorDto ->  ResultState.Error(errorDto.map()) }
                 } ?: ResultState.Error(
                     ErrorEntity.Error(
                         NetworkConstants.NETWORK_ERROR_CODES.UNEXPECTED_ERROR,
@@ -76,6 +81,7 @@ class FixerRepositoryImpl(val api: FixerApi) : FixerRepository {
                 )
             )
         } catch (ex: Throwable) {
+            Timber.e(ex)
             ResultState.Error(handleCommonErrors(ex))
         }
     }

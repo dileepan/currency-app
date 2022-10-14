@@ -4,19 +4,24 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nagarro.currency.BuildConfig
 import com.nagarro.currency.data.constants.FIXER_BASE_URL
+import com.nagarro.currency.data.constants.FIXER_DATE_FORMAT
 import com.nagarro.currency.interceptor.HeaderInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 val retrofitModule = module {
-    single {
+    single<Retrofit> {
         val okHttpClient = OkHttpClient()
             .newBuilder()
             .addInterceptor(get<HttpLoggingInterceptor>())
             .addInterceptor(get<HeaderInterceptor>())
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .callTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .build()
 
         Retrofit.Builder()
@@ -43,6 +48,6 @@ fun getGsonConverterFactory(): GsonConverterFactory {
 
 fun getGson(): Gson {
     val gsonBuilder = GsonBuilder()
-    gsonBuilder.setDateFormat("yyyy-MM-dd")
+    gsonBuilder.setDateFormat(FIXER_DATE_FORMAT)
     return gsonBuilder.create()
 }

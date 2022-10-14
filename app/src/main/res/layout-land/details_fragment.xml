@@ -95,7 +95,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{`1.00` + viewModel.baseCurrency}"
+                android:text="@{`1.00 ` + viewModel.baseCurrency}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="0.92546" />
@@ -104,7 +104,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{`inv 1.00` + viewModel.baseCurrency}"
+                android:text="@{`inv 1.00 ` + viewModel.baseCurrency}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="1.45334" />

@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.viewModelScope
 import com.nagarro.currency.BR
 import com.nagarro.currency.R
+import com.nagarro.currency.data.constants.FIXER_DATE_FORMAT
 import com.nagarro.currency.domain.common.ResultState
 import com.nagarro.currency.domain.usecase.CurrencyUseCase
 import com.nagarro.currency.presentation.base.BaseViewModel
@@ -12,6 +13,7 @@ import com.nagarro.currency.presentation.model.HistoricalModel
 import com.nagarro.currency.presentation.model.LatestModel
 import kotlinx.coroutines.launch
 import me.tatarka.bindingcollectionadapter2.ItemBinding
+import java.text.SimpleDateFormat
 
 class DetailsViewModel(private val currencyUseCase: CurrencyUseCase) : BaseViewModel() {
 
@@ -32,7 +34,10 @@ class DetailsViewModel(private val currencyUseCase: CurrencyUseCase) : BaseViewM
             val historical = currencyUseCase.fetchHistoricalData(from, to)
             val latest = currencyUseCase.fetchLatestData(from)
             when (historical) {
-                is ResultState.Success -> historicalItems.addAll(historical.data.dateRateMap.map { HistoricalModel(it.key, it.value) })
+                is ResultState.Success -> historicalItems.addAll(
+                    historical.data.dateRateMap.map { HistoricalModel(it.key, it.value) }
+                        .sortedByDescending { SimpleDateFormat(FIXER_DATE_FORMAT).parse(it.date) }
+                )
                 is ResultState.Error -> setError(historical.errorEntity)
             }
             when (latest) {

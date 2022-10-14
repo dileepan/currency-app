@@ -8,7 +8,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.Date
 
 interface FixerApi {
 
@@ -23,15 +22,15 @@ interface FixerApi {
 
     @GET("fixer/{date}")
     suspend fun getHistoricalRates(
-        @Path("date") date: Date,
+        @Path("date") date: String,
         @Query("base") base: String,
         @Query("symbols") currencySymbols: String
     ): Response<HistoricalDto>
 
     @GET("fixer/timeseries")
     suspend fun getTimeseries(
-        @Query("start_date") startDate: Date,
-        @Query("end_date") endDate: Date,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
         @Query("base") base: String,
         @Query("symbols") currencySymbols: String
     ): Response<TimeseriesDto>

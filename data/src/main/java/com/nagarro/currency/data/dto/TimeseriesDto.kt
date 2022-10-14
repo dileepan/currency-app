@@ -8,6 +8,6 @@ data class TimeseriesDto(
     @SerializedName("end_date") val endDate: Date? = null,
     @SerializedName("start_date") val startDate: Date? = null,
     @SerializedName("rates") val rates: HashMap<String, HashMap<String, Double>>? = null,
-    @SerializedName("success") override val success: Boolean? = null,
-    @SerializedName("error") override val error: ErrorDto? = null
-): BaseDto(success, error)
+    @SerializedName("success") override val reqStatus: Boolean? = null,
+    @SerializedName("error") override val errorDto: ErrorDto? = null
+): BaseDto(reqStatus, errorDto)

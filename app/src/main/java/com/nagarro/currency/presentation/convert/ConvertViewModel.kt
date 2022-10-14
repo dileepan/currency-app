@@ -1,6 +1,7 @@
 package com.nagarro.currency.presentation.convert
 
 import android.text.Editable
+import android.view.View
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
@@ -10,6 +11,7 @@ import com.nagarro.currency.BR
 import com.nagarro.currency.R
 import com.nagarro.currency.domain.common.ResultState
 import com.nagarro.currency.domain.usecase.CurrencyUseCase
+import com.nagarro.currency.listeners.OnItemSelectListener
 import com.nagarro.currency.presentation.base.BaseViewModel
 import kotlinx.coroutines.launch
 import me.tatarka.bindingcollectionadapter2.ItemBinding
@@ -24,17 +26,19 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
     val items: ObservableList<String> = ObservableArrayList()
     val itemBinding = ItemBinding.of<String>(BR.item, R.layout.item_spinner)
 
-    val selectFromCurrency: (pos: Int) -> Unit = { pos ->
-        from = items[pos]
-        if (fromCurr.get() != from) {
+    val selectFromCurrency = object : OnItemSelectListener {
+        override fun onItemSelected(view: View, position: Int) {
+            from = items[position]
+            if (fromCurr.get() == from) return
             fromCurr.set(from)
             fetchExchangeRate()
         }
     }
 
-    val selectToCurrency: (pos: Int) -> Unit = { pos ->
-        to = items[pos]
-        if (toCurr.get() != to) {
+    val selectToCurrency = object : OnItemSelectListener {
+        override fun onItemSelected(view: View, position: Int) {
+            to = items[position]
+            if (toCurr.get() == to) return
             toCurr.set(to)
             fetchExchangeRate()
         }
@@ -49,7 +53,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
             showProgress(true)
             when (val res = useCase.fetchSymbols()) {
                 is ResultState.Success -> {
-                    items.addAll(res.data.keys)
+                    items.addAll(res.data.keys.sorted())
                 }
                 is ResultState.Error -> setError(res.errorEntity)
             }
@@ -58,10 +62,12 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
     }
 
     fun onEnterFromCurrencyValue(value: Editable) {
+        if (value.toString().isBlank() || !value.toString().isDigitsOnly()) return
         toCurrencyValue.set(String.format("%.2f", rate * value.toString().toDouble()))
     }
 
     fun onEnterToCurrencyValue(value: Editable) {
+        if (value.toString().isBlank() || !value.toString().isDigitsOnly()) return
         fromCurrencyValue.set(String.format("%.2f", value.toString().toDouble() / rate))
     }
 
@@ -91,7 +97,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
                 fromCurrencyValue.set("1")
             }
             toCurrencyValue.set(fromCurrencyValue.get())
-
+            return
         }
         viewModelScope.launch {
             showProgress(true)

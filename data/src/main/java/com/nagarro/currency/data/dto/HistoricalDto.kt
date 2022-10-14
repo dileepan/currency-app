@@ -8,6 +8,6 @@ data class HistoricalDto(
     @SerializedName("base") val base: String? = null,
     @SerializedName("date") val date: Date? = null,
     @SerializedName("rates") val rates: HashMap<String, Double>? = null,
-    @SerializedName("success") override val success: Boolean? = null,
-    @SerializedName("error") override val error: ErrorDto? = null
-): BaseDto(success, error)
+    @SerializedName("success") override val reqStatus: Boolean? = null,
+    @SerializedName("error") override val errorDto: ErrorDto? = null
+): BaseDto(reqStatus, errorDto)

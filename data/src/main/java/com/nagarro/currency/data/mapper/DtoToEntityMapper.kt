@@ -17,7 +17,7 @@ fun TimeseriesDto.map() = DataEntity.HistoricalData(
     to = this.rates?.values?.first()?.keys?.first() ?: "",
     dateRateMap = this.rates?.let {
         val map = mutableMapOf<String, Double>()
-        it.forEach { entry -> map.put(entry.key, entry.value.values.first()) }
+        it.forEach { entry -> map[entry.key] = entry.value.values.first() }
         map
     } ?: hashMapOf()
 )

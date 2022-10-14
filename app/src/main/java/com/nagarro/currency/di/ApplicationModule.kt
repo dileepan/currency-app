@@ -9,9 +9,9 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val appModule = module {
-    single { get<Retrofit>().create(FixerApi::class.java) }
+    single<FixerApi> { get<Retrofit>().create(FixerApi::class.java) }
 
     single<FixerRepository> { FixerRepositoryImpl(get()) }
 
-    factory<CurrencyUseCase> { CurrencyUseCaseImpl(get()) }
+    single<CurrencyUseCase> { CurrencyUseCaseImpl(get()) }
 }

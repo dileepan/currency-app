@@ -1,17 +1,26 @@
 package com.nagarro.currency.util
 
+import android.view.View
 import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.nagarro.currency.listeners.OnItemSelectListener
 
 object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter("onSpinnerItemSelectListener")
-    fun setOnSpinnerItemSelectListener(view: Spinner, onClickItem: (pos: Int) -> Unit) {
-        view.onItemClickListener = AdapterView.OnItemClickListener { _, _, i, _ ->
-            onClickItem(i)
+    fun setOnSpinnerItemSelectListener(view: Spinner, listener: OnItemSelectListener) {
+        view.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                view?.let { listener.onItemSelected(view, position) }
+            }
+
+            override fun onNothingSelected(adapter: AdapterView<*>?) {
+
+            }
         }
     }
 
