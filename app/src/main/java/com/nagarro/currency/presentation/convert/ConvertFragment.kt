@@ -18,6 +18,8 @@ class ConvertFragment : BaseFragment<ConvertViewModel, ConvertFragmentBinding>(C
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (viewModel.items.isEmpty()) viewModel.init()
+
         viewModel.swapEvent.observe(viewLifecycleOwner) {
             val fromListener = binding.fromCurrency.onItemSelectedListener
             val toListener = binding.toCurrency.onItemSelectedListener

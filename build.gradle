@@ -18,6 +18,8 @@ ext {
     google_material_version = "1.6.1"
     hilt_dagger_version = "2.44"
     koin_version = "3.2.2"
+    mockk_version = "1.13.2"
+    okhttp_version = "4.10.0"
     retrofit_version = "2.9.0"
     timber_version = '4.7.1'
 }

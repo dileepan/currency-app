@@ -56,11 +56,12 @@
 
         <EditText
             android:id="@+id/fromCurrencyValue"
+            onTextChanged="@{viewModel.onEnterFromCurrencyValue}"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginTop="25dp"
-            android:afterTextChanged="@{(text) -> viewModel.onEnterFromCurrencyValue(text)}"
             android:hint="@string/hint_base_currency"
+            android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:text="@{viewModel.fromCurrencyValue}"
             app:layout_constraintEnd_toEndOf="@id/fromCurrency"
@@ -69,10 +70,11 @@
 
         <EditText
             android:id="@+id/toCurrencyValue"
+            onTextChanged="@{viewModel.onEnterToCurrencyValue}"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:afterTextChanged="@{(text) -> viewModel.onEnterToCurrencyValue(text)}"
             android:hint="@string/hint_to_currency"
+            android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:text="@{viewModel.toCurrencyValue}"
             app:layout_constraintEnd_toEndOf="@id/toCurrency"

@@ -1,7 +1,5 @@
 package com.nagarro.currency.presentation.convert
 
-import android.text.Editable
-import android.view.View
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
@@ -14,6 +12,7 @@ import com.nagarro.currency.architecture.SingleLiveEvent
 import com.nagarro.currency.domain.common.ResultState
 import com.nagarro.currency.domain.usecase.CurrencyUseCase
 import com.nagarro.currency.listeners.OnItemSelectListener
+import com.nagarro.currency.listeners.OnTextChangedListener
 import com.nagarro.currency.presentation.base.BaseViewModel
 import kotlinx.coroutines.launch
 import me.tatarka.bindingcollectionadapter2.ItemBinding
@@ -30,7 +29,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
     val itemBinding = ItemBinding.of<String>(BR.item, R.layout.item_spinner)
 
     val selectFromCurrency = object : OnItemSelectListener {
-        override fun onItemSelected(view: View, position: Int) {
+        override fun onItemSelected(position: Int) {
             if (from == items[position]) return
             from = items[position]
             fetchExchangeRate()
@@ -38,18 +37,33 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
     }
 
     val selectToCurrency = object : OnItemSelectListener {
-        override fun onItemSelected(view: View, position: Int) {
+        override fun onItemSelected(position: Int) {
             if (to == items[position]) return
             to = items[position]
             fetchExchangeRate()
         }
     }
 
-    private var rate: Double = 0.0
+    val onEnterFromCurrencyValue = object : OnTextChangedListener {
+        override fun onTextChanged(value: String) {
+            if (value.isBlank() || !value.isDecimalOnly()) return
+            toCurrencyValue.set(String.format("%.2f", rate * value.toDouble()))
+        }
+    }
+
+    val onEnterToCurrencyValue = object : OnTextChangedListener {
+        override fun onTextChanged(value: String) {
+            if (value.isBlank() || !value.isDecimalOnly()) return
+            fromCurrencyValue.set(String.format("%.2f", value.toDouble() / rate))
+        }
+    }
+
     private var from = ""
     private var to = ""
+    private var rate = 0.0
 
-    init {
+    fun init() {
+        items.clear()
         viewModelScope.launch {
             showProgress(true)
             when (val res = useCase.fetchSymbols()) {
@@ -60,16 +74,6 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
             }
             showProgress(false)
         }
-    }
-
-    fun onEnterFromCurrencyValue(value: Editable) {
-        if (value.toString().isBlank() || !value.toString().isDigitsOnly()) return
-        toCurrencyValue.set(String.format("%.2f", rate * value.toString().toDouble()))
-    }
-
-    fun onEnterToCurrencyValue(value: Editable) {
-        if (value.toString().isBlank() || !value.toString().isDigitsOnly()) return
-        fromCurrencyValue.set(String.format("%.2f", value.toString().toDouble() / rate))
     }
 
     fun onDetailsClicked() {
@@ -84,20 +88,19 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
         from = to
         to = t
 
-        _swapEvent.postValue(Pair(items.indexOf(from), items.indexOf(to)))
-
-        if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
+        if (fromCurrencyValue.get().isNullOrBlank() || !fromCurrencyValue.get().isDecimalOnly()) {
             fromCurrencyValue.set("1.00")
         }
         val toValue = fromCurrencyValue.get()?.let { it.toDouble() * rate } ?: rate
         toCurrencyValue.set(String.format("%.2f", toValue))
+        _swapEvent.postValue(Pair(items.indexOf(from), items.indexOf(to)))
     }
 
     private fun fetchExchangeRate() {
         if (from.isBlank() || to.isBlank()) return
         if (from == to) {
             rate = 1.0
-            if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
+            if (fromCurrencyValue.get().isNullOrBlank() || !fromCurrencyValue.get().isDecimalOnly()) {
                 fromCurrencyValue.set("1.00")
             }
             toCurrencyValue.set(fromCurrencyValue.get())
@@ -108,7 +111,7 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
             when (val res = useCase.fetchCurrentRate(from, to)) {
                 is ResultState.Success -> {
                     rate = res.data
-                    if (fromCurrencyValue.get().isNullOrBlank() || fromCurrencyValue.get()?.isDigitsOnly() != true) {
+                    if (fromCurrencyValue.get().isNullOrBlank() || !fromCurrencyValue.get().isDecimalOnly()) {
                         fromCurrencyValue.set("1.00")
                     }
                     val toValue = fromCurrencyValue.get()?.let { it.toDouble() * rate } ?: rate
@@ -119,4 +122,6 @@ class ConvertViewModel(private val useCase: CurrencyUseCase) : BaseViewModel() {
             showProgress(false)
         }
     }
+
+    private fun String?.isDecimalOnly(): Boolean = this?.replace(".", "")?.isDigitsOnly() ?: false
 }
